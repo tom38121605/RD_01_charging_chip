@@ -1,0 +1,10 @@
+../Core/Src/app_rgbled.c:57:6:led2spi_onedata	16	static
+../Core/Src/app_rgbled.c:72:6:led2spi_data	16	static
+../Core/Src/app_rgbled.c:104:6:set_color_rgb	8	static
+../Core/Src/app_rgbled.c:115:6:set_color_red	0	static
+../Core/Src/app_rgbled.c:126:6:set_color_green	0	static
+../Core/Src/app_rgbled.c:136:6:set_color_blue	0	static
+../Core/Src/app_rgbled.c:147:6:set_color_white	0	static
+../Core/Src/app_rgbled.c:158:6:set_color_black	0	static
+../Core/Src/app_rgbled.c:82:6:switch_color	16	static
+../Core/Src/app_rgbled.c:170:6:rgbled_task	16	static

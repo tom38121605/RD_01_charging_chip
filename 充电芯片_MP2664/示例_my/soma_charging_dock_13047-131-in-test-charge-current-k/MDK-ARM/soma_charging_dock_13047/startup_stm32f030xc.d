@@ -1,0 +1,1 @@
+soma_charging_dock_13047\startup_stm32f030xc.o: startup_stm32f030xc.s

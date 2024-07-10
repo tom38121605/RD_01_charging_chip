@@ -1,0 +1,11 @@
+app_mp2664gg.c:5:6:selbattchannel	7
+app_mp2664gg.c:52:6:opencharge	1
+app_mp2664gg.c:65:6:closecharge	1
+app_mp2664gg.c:79:6:set_batt_UVLO	1
+app_mp2664gg.c:92:6:set_fastcharge_current	1
+app_mp2664gg.c:105:6:set_precharge_current	1
+app_mp2664gg.c:118:6:set_batt_regulation_voltage	1
+app_mp2664gg.c:131:6:set_fastcharge_threshold	1
+app_mp2664gg.c:144:6:set_recharge_threshold	1
+app_mp2664gg.c:157:9:get_system_status	1
+app_mp2664gg.c:167:9:get_fault	1

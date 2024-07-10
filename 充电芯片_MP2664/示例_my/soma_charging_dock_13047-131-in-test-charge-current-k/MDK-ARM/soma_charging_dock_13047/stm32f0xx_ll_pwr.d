@@ -1,0 +1,11 @@
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_pwr.c
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_pwr.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f030xc.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Include/core_cm0.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: C:\Keil_v538a\ARM\ARMCC\Bin\..\include\stdint.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Include/cmsis_version.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/CMSIS/Device/ST/STM32F0xx/Include/system_stm32f0xx.h
+soma_charging_dock_13047\stm32f0xx_ll_pwr.o: ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h
