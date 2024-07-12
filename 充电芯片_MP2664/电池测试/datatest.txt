@@ -1,0 +1,278 @@
+
+速查状态： 
+8A  --  pre charge , power good
+92  --   charge , power good 
+93  --  charge  , power good，热调节
+9A  --  charge done , power good
+
+速查fault：
+A0  --  Vin OVP
+80  --  无故障 
+88   --  batt OVP
+
+
+======== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA +17mA,  27mA, 4.095V    =========
+
+------电池参数设置：
+         set_fastcharge_current(BATT_CHANNEL0, 0x11);                     //fastcharge current: 272mA +17mA
+         set_precharge_current(BATT_CHANNEL0, 0x03);                     //precharge current: 27mA
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x21<<2 );      //batt regulation_vol: 4.095v           
+         set_recharge_threshold(BATT_CHANNEL0, 0x01 );                 //batt_reg: -0.3V  
+         set_safety_timer(BATT_CHANNEL0, 0);                                  //disable safety timer
+
+放电了一夜，隔离测电池电压0v
+
+先取下负载
+04 11 4B 87 42 4B 8A 80    //pre charge , power good     // 无故障    //25.3mA  2.93V
+
+04 11 4B 87 42 4B 92 80     // charge , power good      // 无故障    
+04 11 4B 87 42 4B 8A 80     //pre charge , power good     // 无故障    //4.3mA  2.96V
+
+04 11 4B 87 42 4B 92 80     // charge , power good      // 无故障    
+04 11 4B 87 42 4B 92 88    // charge , power good     //  batt OVP
+04 11 4B 87 42 4B 93 88    // charge  , power good，热调节      //  batt OVP
+04 11 4B 87 42 4B 92 88    // charge , power good     //  batt OVP   //47mA  3.5V
+
+
+
+04 11 4B 87 42 4B 92 80     0.1mA     4.12V
+
+加上负载
+
+04 11 4B 87 42 4B 8A 80      //pre charge , power good     // 无故障   // 0.03mA   2.71V
+04 11 4B 87 42 4B 92 80       // charge , power good      // 无故障       //118mA  3.71V
+
+
+
+
+
+
+======== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA +17mA,  27mA, 4.095V    =========
+
+------电池参数设置：
+         set_fastcharge_current(BATT_CHANNEL0, 0x11);                     //fastcharge current: 272mA +17mA
+         set_precharge_current(BATT_CHANNEL0, 0x03);                     //precharge current: 27mA
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x21<<2 );      //batt regulation_vol: 4.095v           
+         set_recharge_threshold(BATT_CHANNEL0, 0x01 );                 //batt_reg: -0.3V  
+         set_safety_timer(BATT_CHANNEL0, 0);                                  //disable safety timer
+
+
+04 11 4B 87 42 4B 92 A0     // charge , power good      // Vin OVP      //电流71.4mA    4.06V
+
+04 11 4B 87 42 4B 92 80     // charge , power good      // 无故障         //电流71.4mA    4.06V   应处于CV充电模式，电流逐渐减少
+04 11 4B 87 42 4B 92 80     // charge , power good      // 无故障         //电流68.8mA    4.06V
+04 11 4B 87 42 4B 92 80     // charge , power good      // 无故障         //电流66.8mA    4.06V
+
+------修改电池参数：  fast charge current   //306，27， 4.095
+         set_fastcharge_current(BATT_CHANNEL0, 0x12);                   //fastcharge current: 272mA +34mA
+
+04 12 4B 87 42 4B 92 A0      // charge , power good      // Vin OVP      //电流66.8.4mA   3.06V  
+04 12 4B 87 42 4B 92 80     // charge , power good      // 无故障          //电流64.8mA    4.06V    应处于CV充电模式，电流逐渐减少
+
+
+放一会电（放电到2.93V）， 再充电，希望能充电到高点时出现charge done事件
+------改回电池参数：  fast charge current  //289，27， 4.095
+         set_fastcharge_current(BATT_CHANNEL0, 0x11);                        //fastcharge current: 272mA +17mA
+
+04 11 4B 87 42 4B 8A 80       // pre charge  , power good   //无故障    //电流 -128mA  2.93V
+
+
+因涓流充电抵不上负载放电，固拔掉负载充几秒钟，再插上负载：
+04 11 4B 87 42 4B 92 88    //charge , power good       // batt OVP    //电流 169.0mA  4.06V    //取下负载
+
+04 11 4B 87 42 4B 92 80    // charge , power good      // 无故障   //电流 105.3mA  3.87V         //再插上负载
+04 11 4B 87 42 4B 92 80    // charge , power good      // 无故障   //电流 103.0mA  3.93V
+04 11 4B 87 42 4B 92 80    // charge , power good      // 无故障   //电流 100.0mA  4.00V
+04 11 4B 87 42 4B 92 80    // charge , power good      // 无故障   //电流 96.0mA   4.06V
+04 11 4B 87 42 4B 92 80    // charge , power good      // 无故障   //电流 85.0mA   4.06V
+
+重新插拔电源
+04 11 4B 87 42 4B 92 A0   // charge  , power good     //   Vin OVP   //电流   85.0mA   4.06V
+04 11 4B 87 42 4B 92 80   // charge , power good      // 无故障   //电流 85.0mA   4.06V
+
+保持电源开着，重新插拔电池
+04 11 4B 87 42 4B 9A 88     // charge done , power good   // batt OVP
+04 11 4B 87 42 4B 92 88     // charge , power good            // batt OVP
+04 11 4B 87 42 4B 92 80    // charge , power good             // 无故障          CV模式充电
+
+
+
+
+
+
+
+
+====== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA-289mA,  27mA, 4.2V-4.14V    ======
+
+------电池参数设置：
+         set_fastcharge_current(BATT_CHANNEL0, 0x10);                   //fastcharge current: 272mA
+         set_precharge_current(BATT_CHANNEL0, 0x03);                   //precharge current: 27mA
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x28<<2 );    //batt regulation_vol: 4.2v           
+         set_recharge_threshold(BATT_CHANNEL0, 0x01 );               //batt_reg: -0.3V  
+         set_safety_timer(BATT_CHANNEL0, 0);                                //disable safety timer
+
+说明： 先放电到带负载2.53V（去负载3.28V），再插上板子电源，给电池充电。
+
+ 
+170mA    开始没有负载启动  （或开启时涓流带不动负载）
+下面是启动后，加上负载
+ 
+04 10 4B A3 42 4B 92 80   // charge , power good      // 无故障    //电流 88.0mA    3.87V
+04 10 4B A3 42 4B 92 80   // charge , power good      // 无故障    //电流 87.7mA    3.90V
+04 10 4B A3 42 4B 92 80   // charge , power good      // 无故障    //电流 87.1mA    3.93V
+
+------电池参数修改：  修改fast charge current
+         set_fastcharge_current(BATT_CHANNEL0, 0x14);                   //fastcharge current: 272mA + 68mA
+
+04 10 4B A3 42 4B 92 80   // charge , power good      // 无故障    //电流 135.8mA   4.21V
+
+
+------电池参数修改：  修改fast charge current
+         set_fastcharge_current(BATT_CHANNEL0, 0x10);                   //fastcharge current: 272mA  
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x24<<2 );    //batt regulation_vol: 4.14v    
+ 
+带负载启动
+04 10 4B 93 42 4B 8A 80          // charge  , power good    //无故障    //电流 -121.5mA  2.84mA
+
+去负载
+04 10 4B A3 42 4B 92 80   // charge , power good      // 无故障    //电流 133mA   4.15V
+
+再加负载  （电压太低，处于涓流充电，带不动负载）
+04 10 4B 93 42 4B 8A 80    //pre charge , power good      // 无故障    //电流 -118mA   2.78V  
+
+取下负载，空载充一会儿电，再加负载
+04 10 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 82mA   4.00V  
+04 10 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 82.6mA   4.03V 
+04 10 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 80mA   4.06V  
+04 10 4B 93 42 4B 92 80    //charge , power good      // 无故障    //电流 77mA   4.12V  
+
+放置一晚上
+------电池参数修改：  修改fast charge current
+         set_fastcharge_current(BATT_CHANNEL0, 0x11);               //fastcharge current: 272mA  +  17mA 
+
+04 11 4B 93 42 4B 92 80    //charge , power good      // 无故障    //电流 99.1mA   4.03V  
+
+04 11 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 82.9mA   4.12V  
+
+刚才似乎充满一次
+04 11 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 96.2mA   4.06V  
+
+
+04 11 4B 93 42 4B 8A 80    //pre charge , power good      // 无故障    //电流 -128mA   3V  
+04 11 4B 93 42 4B 92 80    //charge , power good            // 无故障    //电流 96.2mA   4.06V  
+
+04 11 4B 93 42 4B 92 80     //charge , power good      // 无故障    //电流 96.2mA   4.06V  
+
+刚才似乎充满一次
+04 11 4B 93 42 4B 8A 88    //pre charge , power good      // batt OVP    //电流 -128mA   3V   
+04 11 4B 93 42 4B 8A 80    //pre charge , power good      // 无故障       //电流 -128mA   3V    
+
+04 11 4B 93 42 4B 92 80    //charge , power good           // 无故障       //电流 94.6mA   4.06V      //从precharge 跳变到 fast charge
+04 11 4B 93 42 4B 92 80    //charge , power good           // 无故障       //电流 79mA   4.12V    
+
+04 11 4B 93 42 4B 92 80    //charge , power good           // 无故障  
+04 11 4B 93 42 4B 8A 80    //pre charge , power good      // 无故障
+04 11 4B 93 42 4B 92 80    //charge , power good           // 无故障  
+04 11 4B 93 42 4B 92 88    //charge , power good           // batt OVP  
+04 11 4B 93 42 4B 92 80    //charge , power good           // 无故障  
+04 11 4B 93 42 4B 8A 88   //pre charge , power good      // batt OVP 
+04 11 4B 93 42 4B 8A 80   //pre charge , power good      // 无故障
+04 11 4B 93 42 4B 92 80   //charge , power good           // 无故障  
+04 11 4B 93 42 4B 92 88   //charge , power good           // batt OVP  
+04 11 4B 93 42 4B 92 80  //charge , power good           // 无故障  
+
+
+
+
+
+ 
+
+====== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA,  27mA, 4.02V    ======
+
+电池参数设置：
+         set_fastcharge_current(BATT_CHANNEL0, 0x10);   //fastcharge current: 272mA
+         set_precharge_current(BATT_CHANNEL0, 0x03);    //precharge current: 27mA
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x1c<<2 );    //batt regulation_vol: 4.02v           
+         set_safety_timer(BATT_CHANNEL0, 0);   //disable safety timer
+
+说明： 先放电到带负载2.65V（去负载3.43V），再插上板子电源，给电池充电。
+
+96mA
+
+04 10 4B 73 42 4B 92 88     // charge , power good      // batt OVP   //电流496mA  4.03V
+04 10 4B 73 42 4B 92 80     // charge , power good      // 无故障    //电流 90mA ， 4.03V
+
+
+90mA
+
+
+====== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA,  27mA, 4.02V    ======
+
+电池参数设置：
+         set_fastcharge_current(BATT_CHANNEL0, 0x10);   //fastcharge current: 272mA
+         set_precharge_current(BATT_CHANNEL0, 0x03);    //precharge current: 27mA
+         set_batt_regulation_voltage(BATT_CHANNEL0, 0x1c&lt;&lt;2 );    //batt regulation_vol: 4.02v           
+         set_safety_timer(BATT_CHANNEL0, 0);   //disable safety timer
+
+说明： 先放电到3V，再插上板子电源，给电池充电。
+
+04 10 4B 73 92 A8      // charge , power good      //  vin fault， batt OVP     （第一次刚上电时出现 vin fault）
+ 
+04 10 4B 73 92 88     // charge , power good      // batt OVP   //电流45mA
+
+04 10 4B 73 92 80    // charge , power good      // 无故障    //电流 71mA ， 4.00V
+04 10 4B 73 92 80    // charge , power good      // 无故障    //电流 58mA ， 4.00V
+04 10 4B 73 92 80    // charge , power good      // 无故障    //电流 55mA ， 4.03V
+
+
+04 10 4B 73 9A 80    // charge done , power good         // 无故障   //电流 6mA ， ？V
+04 10 4B 73 92 80    // charg  , power good                  // 无故障   //电流5mA ， ？V
+04 10 4B 73 9A 80     // charge done , power good        // 无故障   //电流 3mA ， ？V
+04 10 4B 73 92 80     // charg  , power good                 // 无故障   //电流3mA ， ？V
+04 10 4B 73 9A 80    // charge done , power good        // 无故障   //电流 2mA ， ？V
+04 10 4B 73 92 80    // charg  , power good                  // 无故障   //电流2mA ， ？V
+
+04 10 4B 73 92 88       // charg  , power good       // batt OVP      //电流0.3mA  ，3.88V
+04 10 4B 73 92 88       // charg  , power good       // batt OVP (锯齿波引起)   //电流 8.35mA  ，3.90V
+
+ 
+
+====== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA,  27mA, 4.02V    ======
+
+
+04 10 4B 73    92 A8      // charge , power good      //  vin fault， batt OVP     （第一次刚上电时出现 vin fault）
+ 
+04 10 4B 73    92 88     // charge , power good      // batt OVP   //电流45mA
+
+04 10 4B 73    92 80     // charge , power good      // 无故障    //电流 36mA
+04 10 4B 73    92 80     // charge , power good      // 无故障    //电流 28mA
+04 10 4B 73    92 80     // charge , power good      // 无故障    //电流 6mA
+
+04 10 4B 73    92 88     // charge , power good             // batt OVP     // 电流 5mA
+04 10 4B 73    9A 88    // charge done , power good     // batt OVP     // 电流 3mA
+
+ 
+04 10 4B 73 93 88    // charge  , power good，热调节             // batt OVP     // 电流 5mA
+
+04 10 4B 73 82 88    // no charge  , power good                // batt OVP     // 
+
+04 10 4B 73 9A 80     // charge done , power good      // 无故障        // 电流 0mA
+04 10 4B 73 9A 80     // charge done , power good      // 无故障         // 电流 0mA
+
+
+
+
+====== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA,  27mA, 4.2V    ======
+
+04 10 4B 73    92 88     // charge , power good             // batt OVP
+04 10 4B 73    9A 88    // charge done , power good     // batt OVP    
+04 10 4B 73    9A 80    // charge done , power good     // 无
+
+
+
+==========
+
+04 10 4B 73    9A A8    // charge done , power good     //  vin fault， batt OVP   （第一次刚上电时出现 vin fault）
+04 10 4B 73    9A 80     // charge done , power good     // 无
+  
+
