@@ -9,6 +9,59 @@
 A0  --  Vin OVP
 80  --  无故障 
 88   --  batt OVP
+A8   --  Vin OVP, batt OVP
+AC  --  Vin OVP, batt OVP + NTC hot
+
+
+ 
+04 14 4B A3 42 4B 92 A0 
+
+04 14 4B A3 42 4B 92 88 
+65 78 69 6E 74 36 0D 0A 
+
+04 14 4B A3 42 4B 92 88 
+65 78 69 6E 74 36 0D 0A 
+
+04 14 4B A3 42 4B 92 88 
+65 78 69 6E 74 36 0D 0A 
+
+04 14 4B A3 42 4B 92 80 
+
+
+======================= 272mA +68mA,  27mA, 4.20V    =========================
+
+。先取下负载充电到CV阶段，再插上负载充一会儿电
+。当电池处于CV充电时，拔掉负载，会出现下面的信息，INT信号也会被拉低（最后一个字节fault状态有改变）
+
+04 14 4B A3 42 4B 92 88     //charge ,   batt OVP
+04 14 4B A3 42 4B 92 80     //charge ,   无故障 
+
+---
+
+04 14 4B A3 42 4B 8A 88    //pre charge ,   batt OVP
+04 14 4B A3 42 4B 92 88    //charge ,   batt OVP
+04 14 4B A3 42 4B 8A 88    //pre charge ,   batt OVP
+04 14 4B A3 42 4B 92 88    //charge ,   batt OVP
+
+
+---
+
+04 14 4B A3 42 4B 8A A8    //pre charge ,  Vin OVP, batt OVP
+04 14 4B A3 42 4B 8A 88    //pre charge ,   batt OVP
+ 04 14 4B A3 42 4B 92 88    //charge ,   batt OVP
+
+
+
+04 14 4B A3 42 4B 92 88   //charge ,   batt OVP
+04 14 4B A3 42 4B 9A 88  // charge done ,   batt OVP
+
+
+05 14 4B A3 42 4B 82 AC 
+05 14 4B A3 42 4B 82 88 
+05 14 4B A3 42 4B 92 88 
+05 14 4B A3 42 4B 93 88 
+05 14 4B A3 42 4B 82 88 
+
 
 
 ======== poweron,  fash mA,  pre mA,  regu V,   status,  fault  ==== 272mA +17mA,  27mA, 4.095V    =========
