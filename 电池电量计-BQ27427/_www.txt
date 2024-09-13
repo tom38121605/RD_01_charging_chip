@@ -1,0 +1,12 @@
+ 
+
+https://www.ti.com/tool/BQ27427EVM?keyMatch=bq27427evm&tisearch=universal_search      //开发套件
+
+https://www.ti.com/sitesearch/en-us/docs/universalsearch.tsp?langPref=en-US&nr=73&searchTerm=BQ27427%20Technical%20Reference%20Manual#q=BQ27427%20Technical%20Reference%20Manual                   //数据手册和RM参考手册
+
+
+
+
+
+
+
