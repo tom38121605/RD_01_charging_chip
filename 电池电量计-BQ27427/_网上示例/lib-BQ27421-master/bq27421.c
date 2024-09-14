@@ -53,7 +53,7 @@ bool bq27421_i2c_control_write( uint16_t subcommand )
     uint8_t i2c_data[2];
 
     i2c_data[0] = BQ27421_CONTROL_LOW;   //00
-    i2c_data[1] = (uint8_t)( ( subcommand ) & 0x00FF );   //8000 &00ff = 00    
+    i2c_data[1] = (uint8_t)( ( subcommand ) & 0x00FF );   //00    
 
     ret = HAL_I2C_Master_Transmit( &HAL_I2C_INSTANCE, (uint16_t)BQ27421_I2C_ADDRESS, i2c_data, 2, HAL_BQ27421_TIMEOUT );
     if( ret != HAL_OK )
@@ -64,7 +64,7 @@ bool bq27421_i2c_control_write( uint16_t subcommand )
     HAL_Delay( BQ27421_DELAY );
 
     i2c_data[0] = BQ27421_CONTROL_HIGH;                       //01
-    i2c_data[1] = (uint8_t)( ( subcommand >> 8 ) & 0x00FF );  //00
+    i2c_data[1] = (uint8_t)( ( subcommand >> 8 ) & 0x00FF );  //80
 
     ret = HAL_I2C_Master_Transmit( &HAL_I2C_INSTANCE, (uint16_t)BQ27421_I2C_ADDRESS, i2c_data, 2, HAL_BQ27421_TIMEOUT );
     if( ret != HAL_OK )
@@ -169,14 +169,13 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
 {
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
     uint8_t checksumNew;
-    
 
     designEnergy_mWh = 3.7 * designCapacity_mAh;
     taperRate = designCapacity_mAh / ( 0.1 * taperCurrent_mA );
 
     // Unseal gauge
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );    //0x8000
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );    //0x8000    //reg01-reg00 = 8000
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );    //0x8000    //reg01-reg00 = 8000
 
     // Send CFG_UPDATE
     bq27421_i2c_control_write( BQ27421_CONTROL_SET_CFGUPDATE );    //0x0013

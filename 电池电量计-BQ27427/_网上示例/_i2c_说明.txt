@@ -1,0 +1,43 @@
+ 
+
+
+ * @功能： Write an amount of data  to a specific memory address  in blocking mode
+@param hi2c指向I2C_HandleTypeDef结构的指针，该结构包含
+*指定I2C的配置信息。
+*@param DevAddress目标设备地址：设备7位地址值
+*在调用接口之前，数据表中的必须向左移动
+*@param MemAddress内存地址
+*@param MemAddSize内存地址大小
+*@param pData指向数据缓冲区的指针
+*@param大小要发送的数据量
+*@param超时超时持续时间
+*@retval HAL状态
+
+HAL_I2C_Mem_Write(  *hi2c, uint16_t DevAddress, uint16_t MemAddress,   MemAddSize, uint8_t *pData,   Size,  Timeout)
+
+
+
+
+------------------------------------------------------------------------------------------------------------------
+
+@ 功能： Transmits in master mode an amount of data in blocking mode
+*@param hi2c指向I2C_HandleTypeDef结构的指针，该结构包含
+*指定I2C的配置信息。
+*@param DevAddress目标设备地址：设备7位地址值
+*在调用接口之前，数据表中的必须向左移动
+*@param pData指向数据缓冲区的指针
+*@param大小要发送的数据量
+*@param超时超时持续时间
+*@retval HAL状态
+
+HAL_I2C_Master_Transmit( *hi2c, uint16_t DevAddress, uint8_t *pData,  Size,   Timeout)    //或把写入的第一个数据作为寄存器地址 
+
+
+
+
+------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
