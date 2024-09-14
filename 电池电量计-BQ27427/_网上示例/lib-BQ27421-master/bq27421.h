@@ -15,7 +15,7 @@
 
 #define BQ27421_CONTROL_LOW                 0x00   //reg00
 #define BQ27421_CONTROL_HIGH                0x01   //reg01
-#define BQ27421_TEMP_LOW                    0x02
+#define BQ27421_TEMP_LOW                    0x02   //reg02
 #define BQ27421_TEMP_HIGH                   0x03
 #define BQ27421_VOLTAGE_LOW                 0x04
 #define BQ27421_VOLTAGE_HIGH                0x05

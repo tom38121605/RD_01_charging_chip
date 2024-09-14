@@ -174,22 +174,22 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     taperRate = designCapacity_mAh / ( 0.1 * taperCurrent_mA );
 
     // Unseal gauge
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );    //0x8000    //reg01-reg00 = 8000
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );    //0x8000    //reg01-reg00 = 8000
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );   //reg01-reg00 = 8000
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );   //reg01-reg00 = 8000
 
     // Send CFG_UPDATE
-    bq27421_i2c_control_write( BQ27421_CONTROL_SET_CFGUPDATE );    //0x0013
+    bq27421_i2c_control_write( BQ27421_CONTROL_SET_CFGUPDATE );    //reg01-reg00 =0x0013
 
     // Poll flags
     do
     {
-        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );  //0006
+        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );  //flags= reg07-reg06
         if( !(flags & 0x0010) )    //问 reg06.4=1
         {
             HAL_Delay( 50 );
         }
     }
-    while( !(flags & 0x0010) );  //等待，直到reg06.4=1
+    while( !(flags & 0x0010) );  //等待，直到reg06.4=1 （CFGUPMODE）
     
 
     // Enable Block Data Memory Control
@@ -360,13 +360,13 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     // Poll flags
     do
     {
-        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );
+        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );   //flags= reg07-reg06
         if( !(flags & 0x0010) )
         {
             HAL_Delay( 50 );
         }
     }
-    while( (flags & 0x0010) );
+    while( (flags & 0x0010) );    //等待，直到reg06.4=0 （CFGUPMODE）
 
     // Seal gauge
     bq27421_i2c_control_write( BQ27421_CONTROL_SEALED );
