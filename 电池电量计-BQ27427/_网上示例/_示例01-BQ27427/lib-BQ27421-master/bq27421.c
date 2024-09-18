@@ -1,7 +1,7 @@
 #include "bq27421.h"
 #include "i2c.h"
 
-bool bq27421_i2c_command_write( uint8_t command, uint16_t data )
+bool bq27421_i2c_command_write( uint8_t command, uint16_t data )  // reg-command = data
 {
     HAL_StatusTypeDef ret;
     uint8_t i2c_data[3];
@@ -21,7 +21,7 @@ bool bq27421_i2c_command_write( uint8_t command, uint16_t data )
     return true;
 }
 
-bool bq27421_i2c_command_read( uint8_t command, uint16_t *data )
+bool bq27421_i2c_command_read( uint8_t command, uint16_t *data )  // data = reg-command 
 {
     HAL_StatusTypeDef ret;
     uint8_t i2c_data[2];
@@ -77,7 +77,7 @@ bool bq27421_i2c_control_write( uint16_t subcommand )  //reg01-00 = subcommand
     return true;
 }
 
-bool bq27421_i2c_control_read( uint16_t subcommand, uint16_t *data )
+bool bq27421_i2c_control_read( uint16_t subcommand, uint16_t *data )  //?
 {
     HAL_StatusTypeDef ret;
     uint8_t i2c_data[2];

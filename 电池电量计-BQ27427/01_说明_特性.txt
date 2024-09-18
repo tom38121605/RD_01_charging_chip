@@ -21,6 +21,222 @@
  
 
 
+-------------------
+
+
+燃油表通过感测BAT和SRX引脚之间的集成感测电阻器（典型值为7 mR）两端的电压来监测蓄电池的充电和放电。
+通过整合通过电池的电荷，在电池充电或放电期间调节电池SOC。
+
+通过比较施加负载前后的充电状态与通过的电量，可以得出电池的总容量。
+
+当施加应用负载时，通过将从当前SOC的预定义函数获得的OCV与负载下的测量电压进行比较来测量电池的阻抗。
+
+OCV和电荷积分的测量确定了化学SOC和化学容量（Qmax）。
+
+
+阻抗分布以及SOC和Qmax值用于确定FullChargeCapacity（）和StateOfCharge（），特别是针对当前的负载和温度。
+
+NominalAvailableCapacity（）和FullAvailableCapacity（）分别是剩余容量（）和满充电容量（）的无补偿（无负载或轻负载）版本。
+
+燃油表有两个标志，[SOC1]和[SOCF]，可通过flags（）命令访问，当电池SOC降至临界水平时发出警告。
+
+当StateOfCharge（）低于第一个容量阈值时，如
+在SOC1设置阈值中指定的[SOC1]（充电状态初始）标志被设置。
+
+一旦StateOfCharge（）上升到SOC1设置阈值以上，该标志就会被清除。所有单位均以%表示。
+
+当StateOfCharge（）降至第二个容量阈值SOCF Set threshold以下时，会设置[SOCF]（充电状态最终）标志，作为最终放电警告。
+
+如果SOCF设置阈值=-1，则该标志在放电期间不起作用。
+
+同样，当StateOfCharge（）上升到SOCF清除阈值以上并且已经设置了[SOCF]标志时，[SOCF]]标志将被清除。所有单位均为%
+
+燃油表的温度信息可以从三个单独的来源配置：
+  1. Internal Temperature Sensor
+
+  2. External Temperature Sensor (Thermistor)
+
+  3. Host Commanded Temperature
+
+无论使用哪个传感器进行测量，系统处理器都可以通过调用temperature（）函数来请求算法使用的当前电池温度
+
+
+2.3 Current Measurement
+  燃油表通过感测集成感测电阻器（典型值为7 mR）两端的电压来测量电流。
+
+  在内部，电压在库仑计数器转换之前通过增益级。
+
+  当前测量数据可通过AverageCurrent（）命令获得。
+
+2.4 Operating Modes
+
+   燃油表有不同的操作模式： POR, INITIALIZATION, NORMAL, CONFIG UPDATE, and SLEEP。
+   从OFF或SHUTDOWN通电后，会发生通电复位（POR），燃油表开始初始化。
+   在NORMAL模式下，燃油表完全通电，可以执行任何允许的任务。
+   RAM中的配置数据可以由主机使用CONFIG UPDATE模式进行更新。
+   在SLEEP模式下，燃油表关闭高频振荡器时钟，进入低功率状态，定期进行测量和计算。
+
+2.4.1 SHUTDOWN Mode
+
+    在SHUTDOWN模式下，LDO输出被禁用（或马上变成等待输入高电平唤醒），因此内部电源和所有基于RAM的易失性数据都会丢失。
+
+   主机可以命令仪表立即进入SHUTDOWN模式，方法是首先打开仪表，然后使用SHUTDOWN_ENABLE子命令（第5.1.11节）
+       和SHUTDOWN子命令（第一5.1.12节）启用该模式。
+
+   要退出关机模式，GPOUT引脚必须从逻辑低升至逻辑高至少200us。
+
+
+2.4.2 POR and INITIALIZATION Modes
+
+   POR后，燃油表将基于ROM的配置默认复制到RAM，并开始初始化基本数据的初始化模式。
+   POR或Control（）RESET子命令的出现将设置Flags（）[ITPOR]状态位，以指示RAM已恢复到ROM默认数据。
+   当检测到电池插入时，一系列初始化活动开始，包括OCV测量。
+   此外，CONTROL_STATUS[QMAX_UP]和[RES_UP]位被清除，以允许对QMAX和阻抗进行未经滤波的学习。
+   CONTROL_STATUS[INITCOMP]位指示初始化模式的完成。
+
+
+2.4.3 CONFIG UPDATE Mode
+
+   如果应用程序需要燃油表的不同配置数据，系统处理器可以使用Control（）SET_CFGUPDATE子命令，以进入CONFIG update模式。
+   此模式下的操作由Flags（）[CFGUPMODE]状态位指示。
+   在此模式下，燃油计量暂停，而主机使用扩展数据命令修改配置数据块。
+   为了恢复燃料计量，主机发送Control（）SOFT_RESET，EXIT_CFGUPMODE或EXIT_RESIM子命令退出CONFIG UPDATE模式，
+      该模式清除Flags（）[ITPOR]和[CFGUPMODE]位。
+   在大约240秒（4分钟）的超时后如果仪表没有从主机收到SOFT_RESET、exit_CFGUPMODE或exit_RESIM子命令，将自动退出CONFIG UPDATE模式。
+
+2.4.4 NORMAL Mode
+
+   当未处于任何其他电源模式时，燃油表处于正常模式。在此模式下，每秒进行一次平均电流（）、电压（）和温度（）测量，
+   并且接口数据集被更新。还做出了改变状态的决定。通过激活不同的电源模式退出此模式。    
+   由于燃油表在正常模式下消耗的功率最大，阻抗跟踪?算法将燃油表保持在该模式的时间最小化
+
+2.4.5 SLEEP Mode
+
+   如果启用了该功能（OpConfig[SLEEEP]=1）并且AverageCurrent（）低于可编程水平睡眠电流（默认值=10 mA），则会自动进入睡眠模式。
+   一旦进入SLEEP模式合格，但在进入之前，燃油表会执行ADC自动校准以尽量减少偏移。
+   在SLEEP模式下，燃油表保持在非常低的功率怠速状态，并每20秒自动短暂唤醒以进行数据测量。
+   在20秒间隔内进行测量后，当平均电流（）上升到睡眠电流（默认值=10 mA）以上时，燃油表将退出睡眠模式。
+   或者，如果内部硬件比较器检测到的瞬时电流高于±30mA的近似阈值，则可以在20秒内部之前提前唤醒。
+
+
+2.5.1 GPOUT Pin
+
+解说：  GPIOPOL=1 ，表示 GPOUT 的活动电平为高电平  （默认为0，表示活动电平为低电平）
+解说：  BATLOWEN=1 ，表示 GPOUT 用于指示电量低BAT_Low  （默认为0，表示为SOC_INT中断的功能 ， 或输入唤醒）
+
+   GPOUT引脚是一个多路复用引脚，可以通过OpConfig[GPIO_POL]位 （第34页，OpConfig.H.3）选择引脚输出的极性。
+   该功能由OpConfig[BATLOWEN]位（OpConfig.L.2）定义。如果设置了该位，则为POUT引脚选择电池电量低指示灯（BAT_Low）功能。
+   如果清除，则为GPOUT引脚选择SOC中断（SOC_INT）功能。
+
+   当BAT_LOW功能被激活时，多路复用引脚上的信号会遵循Flags（）寄存器中[SOC1]位的状态。
+   燃油表有两个标志，可通过flags（）函数访问，当电池SOC降至临界水平时发出警告。
+   当StateOfCharge（）低于指定的第一个容量阈值时
+   在SOC1设置阈值中设置[SOC1]标志。
+   一旦StateOfCharge（）上升到SOC1设置阈值以上，该标志就会被清除。
+   当[BATLOWEN]=1和[GPIOPOL]=1时，GPOUT引脚会自动反映[SOC1]标志的状态。通过将[GPIOPOL]设置为0，可以翻转极性
+
+   当StateOfCharge（）低于第二个容量阈值SOCF Set threshold时，会设置[SOCF]标志，作为最终放电警告。
+   同样，当StateOfCharge（）上升到SOCF清除阈值以上时
+   并且已经设置了[SOCF]标志，则清除了[SOCF]标志
+
+2.5.2 Battery Detection (BIN
+
+    解说： BIE = 1, 则 BIN脚检测电池插入.  如 BIE = 0，则 用 BAT_INSERTsubcommand 来指示系统中是否存在电池
+
+   OpConfig[BIE]位的功能如表2-2所示。
+   当检测到电池插入并且初始化模式完成时，
+   燃油表转换到NORMAL模式以启动阻抗跟踪燃油测量。
+   当未检测到蓄电池插入时，燃油表保持在初始化模式
+
+
+7.1 Data Memory Interface             数据存储器接口
+7.1.1 Accessing the Data Memory   访问数据存储器
+
+   Data Memory ，包括 initialization, default, cell status, calibration, configuration, and user information. 
+
+   大多数数据存储器参数驻留在易失性RAM中，由ROM中的相关参数初始化。
+
+   然而，一些数据存储器参数直接从ROM访问，并且没有相关的RAM副本。
+
+   数据存储器可以通过多种不同的方式访问，具体取决于燃油表的操作模式和访问的数据。
+
+   通过第6章“扩展数据命令”中已经描述的特定指令，可以方便地访问系统经常读取的常用数据存储器位置。
+
+
+   当燃油表处于非密封或密封模式时，这些命令可用
+
+   然而，大多数数据存储器位置只能在UNSEALED模式下通过使用评估软件或数据存储器块传输进行访问。
+   这些位置应在开发和制造过程中进行优化和/或固定。
+   它们成为金色图像文件的一部分，然后可以写入多个电池组。
+   一旦确定，这些值在终端设备运行期间通常保持不变
+
+   为了单独访问数据存储器位置，必须将包含所需数据存储器位置的块传输到命令寄存器位置，
+   在那里它们可以被读取到系统或直接更改。
+   这是通过发送带有数据0x00的设置命令BlockDataControl（）（0x61）来实现的。
+   可以直接从BlockData（）读取多达32个字节的数据（0x40到0x5F），
+   然后重写到BlockData（）命令空间。或者，如果相应的偏移量索引到BlockData（）命令空间中，则可以读取、更改和重写特定位置。最后，
+   一旦将整个块的正确校验和写入BlockDataChecksum（0x60），则驻留在命令空间中的数据将被传输到数据存储器
+
+   偶尔，数据内存类大于32字节的块大小。
+   在这种情况下，DataBlock（）命令指定所需位置所在的32字节块。
+   正确的命令地址由0x40+ offset module 32给出。有关此类数据存储器访问的示例，请参阅第4.1节
+
+   读取和写入子类数据是长达32字节的块操作。
+
+   在写入过程中，如果数据长度超过最大块大小，则该数据被忽略
+
+   写入内存的数据都不受燃油表的限制——燃油表不会拒绝这些值。
+   由于固件程序对无效数据的解释，写入不正确的值可能会导致不正确的操作。
+   写入的数据不是持久的，因此POR确实解决了故障。
+
+7.1.2 Access Modes  访问模式
+
+   燃油表提供两种访问模式，UNSEALED和SEALED，用于控制数据存储器访问权限。
+   燃油表的默认访问模式为UNSEALED，因此系统处理器必须在燃油表重置后发送SEALED子命令以利用数据保护功能。
+   强烈建议将仪表保持在密封模式，除非要访问只能在非密封模式下访问的特定信息。
+
+7.1.3 SEALING and UNSEALING Data Memory Access  密封和解除密封数据存储器访问
+
+   燃油表实施了一个关键访问方案，从密封模式过渡到非密封模式。
+   一旦通过相关子命令密封，必须通过Control（）命令向燃油表发送一组唯一的两个按键，以返回UNSEALED模式。
+   密钥必须连续发送，其间没有其他数据写入Control（）寄存器。
+   在密封模式下，设置CONTROL_STATUS[SS]位；
+   但是当燃油表正确接收到密封到未密封的键时，[SS]位被清除。
+   密封到未密封的密钥在ROM中存储了两个相同的单词，值为0x8000 8000；
+   因此，Control（）应该提供0x8000和0x8000（再次）来解封零件
+
+
+
+
+
+
+
+
+
+
+-----
+
+（1） 通过命令Control（）0x00和0x01输入密封和未密封状态。
+
+（2） 在SEALED模式下，无法通过命令0x3E和0x3F访问数据
+
+
+
+--------------
+
+寄存器示例1：  读取 Control的CONTROL_STATUS
+     mainreg = reg_control = 0x0000
+     subreg  = reg_CONTROL_STATUS = 0x0000
+     先把subreg写入到mainreg中， mainreg = subreg， reg01-reg00= 0000
+     再读取数据， idata-u16 = mainreg = reg01-reg00
+
+
+
+
+
+
+
+
 ============================================参考===========================================
 
 你好，我看BQ27427 technical user manual 里写该芯片仅支持3种chem ID，不同chem ID对应不同电压，chem ID应该怎么获取？
@@ -29,6 +245,32 @@
 ----
 
 您好，可以用4.2V的锂电池, 这款芯片是系统端的。
+
+
+
+
+-------------------------------------------------------------------------
+
+
+2.4.6 HIBERNATE Mode    冬眠模式   （参考 -- BQ27421中才有）
+
+   当系统设备需要进入非常低的功耗状态并且需要最小的仪表功耗时，可以使用HIBERNATE模式。
+
+   当系统设备设置为自己的HIBERNATE、SHUTDOWN或OFF模式时，此模式是理想的
+
+   在燃油表进入HIBERNATE模式之前，系统必须使用SET_HIBERNATE子命令设置CONTROL_STATUS寄存器的[HIBERNATE]位。
+   燃油表等待进入HIBERNATE模式，直到它进行了有效的OCV测量，并且平均电池电流的大小降至休眠电流以下。
+   如果满足以下条件，燃油表也可以进入HIBERNATE模式   电池电压降至休眠电压以下。
+   燃油表将保持HIBERNATE模式，直到系统向燃油表发出直接的I2C命令。不指向燃油表的I2C通信只会短暂唤醒燃油表，立即返回HIBERNATE模式。
+
+   系统有责任在燃油表进入HIBERNATE模式后唤醒燃油表
+   并防止充电器在设置Flags（）[OCVTAKEN]位之前对电池充电，该位表示已读取初始OCV读数。
+   为了获得最大的初始化精度，任何显著的充电或放电电流都应该推迟到ControlStatus（）[INITCOMP]位设置完毕。
+   这可能需要长达10秒的时间。
+   醒来后，燃油表可以继续初始化电池信息。
+   在HIBERNATE模式下，基于RAM的数据值会被保留，但测量状态会丢失。
+   退出HIBERNATE模式后，燃油表将立即重新获取测量值并重新初始化所有测量预测
+
 
 
 

@@ -1,4 +1,11 @@
  
+https://e2e.ti.com/search?q=BQ27427&category=forum    //官网提问
+
+https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/496758/bq27421-g1-remaining-capacity-and-full-charge-capacity-errors
+
+
+
+---------
 
 https://www.ti.com/tool/BQ27427EVM?keyMatch=bq27427evm&tisearch=universal_search      //开发套件
 
