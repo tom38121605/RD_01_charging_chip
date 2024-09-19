@@ -210,10 +210,6 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
 
 
 
-
-
-
-
 -----
 
 £¨1£© Í¨¹ıÃüÁîControl£¨£©0x00ºÍ0x01ÊäÈëÃÜ·âºÍÎ´ÃÜ·â×´Ì¬¡£
@@ -224,14 +220,75 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
 
 --------------
 
-¼Ä´æÆ÷Ê¾Àı1£º  ¶ÁÈ¡ ControlµÄCONTROL_STATUS
+¼Ä´æÆ÷Ê¾Àı1£º  ¶ÁÈ¡ ControlµÄCONTROL_STATUS   £¨²»¿¼ÂÇ½â·âºÍ¼Ó·â£©
+     
      mainreg = reg_control = 0x0000
      subreg  = reg_CONTROL_STATUS = 0x0000
      ÏÈ°ÑsubregĞ´Èëµ½mainregÖĞ£¬ mainreg = subreg£¬ reg01-reg00= 0000
      ÔÙ¶ÁÈ¡Êı¾İ£¬ idata-u16 = mainreg = reg01-reg00
 
 
+¼Ä´æÆ÷Ê¾Àı2£º ĞŞ¸ÄÊı¾İÇøµÄdescap
 
+    //unlock
+    wr  control  0x8000
+    wr  control  0x8000
+
+    //go in update
+    wr  control  0x0013
+    rd 0x06  Flags_register          //until reg06.4=1
+
+    //change the data block
+    wr 0x61 0x00                      //open data block
+    wr 0x3E 0x52                      // ÉèÖÃsubclass Îª82
+    wr 0x3F 0x00                      //ÉèÖÃÊı¾İÇøµÄÊı¾İÆ«Àë·¶Î§£º  00 -  0 to 1f £¨Êµ¼ÊÊı¾İ·¶Î§ 40-5f£©£¬  01 -- 20 to 29
+
+    rd 0x60        OLD_Csum
+    rd 0x47-46   OLD_DesCap_MSB      //¶ÁÈ¡Ô­ÓĞµÄDesCap
+
+    wr 0x47-0x46 0xB004                     //Ğ´ÈëĞÂµÄDesCap£¬ 04b0 = 1200mA ´ıÑéÖ¤0x46ÊÇ¸ßÎ»
+
+    New_Csum = (OLD_Csum + OLD_DesCap -NEW_DesCap ) & 0xff
+    wr 0x60 New_Csum 
+
+    rd 0x60        OLD_Csum
+
+    if(OLD_Csum != New_Csum)
+         err
+
+    //reset
+    wr 0x00 0x42 0x00
+    rd 0x06 Flags_register         //until reg06.4= 0
+ 
+    //lock
+    wr 0x00 0x20 0x00
+
+
+    
+¼Ä´æÆ÷Ê¾Àı3£º ĞŞ¸ÄÊı¾İÇøµÄdescap
+
+    //unlock
+    wr  control  0x8000
+    wr  control  0x8000
+
+    //¶ÁÈ¡Ô­ÓĞµÄ Chem ID
+    rd 0x00 0x08 0x00;
+
+    //go in update
+    wr  control  0x0013
+    rd 0x06                        //until reg06.4=1
+
+    wr control  0x0032       //Ğ´ÈëĞÂµÄ Chem ID 3124  £¨4.4V£©
+
+    //reset
+    wr 0x00 0x42 0x00
+    rd 0x06 Flags_register         //until reg06.4= 0
+
+    //¶ÁÈ¡ĞÂµÄ Chem ID
+    rd 0x00 0x08 0x00;
+ 
+    //lock
+    wr 0x00 0x20 0x00
 
 
 

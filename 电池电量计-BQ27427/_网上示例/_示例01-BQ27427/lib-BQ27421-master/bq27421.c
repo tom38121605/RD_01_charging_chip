@@ -164,8 +164,7 @@ bool bq27421_i2c_read_data_block( uint8_t offset, uint8_t *data, uint8_t bytes )
 
     return true;
 }
-
-//²ÎÊý£º designCapacity_mAh  £¬   terminateVoltage_mV  £¬  taperCurrent_mA
+//in£º designCapacity_mAh  £¬   terminateVoltage_mV  £¬  taperCurrent_mA
 bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, uint16_t taperCurrent_mA )
 {
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
@@ -310,7 +309,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     checksumCalc = 0xFF - checksumCalc;  //get the checksum
 
     // Update OpConfig
-    block[0] = 0x05;
+    block[0] = 0x05;             //set new OpConfig
 
     // Calculate new checksum
     checksumNew = 0x00;
@@ -367,7 +366,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
             HAL_Delay( 50 );
         }
     }
-    while( (flags & 0x0010) );    // ?   ?  reg06.4=0   CFGUPMODE  
+    while( (flags & 0x0010) );    //wait, until reg06.4=0   CFGUPMODE  
 
     // Seal gauge
     bq27421_i2c_control_write( BQ27421_CONTROL_SEALED );    //reg01-00=0020

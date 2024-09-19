@@ -155,31 +155,31 @@ bool bq27421_i2c_read_data_block( uint8_t offset, uint8_t *data, uint8_t bytes )
 }
 
 
-
+//in: 200mAh, 3000mV, 80mA
 bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, uint16_t taperCurrent_mA )
 {
 
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
     uint8_t checksumNew;
-	int ret = 0;
-	uint8_t block[32];
+	 int ret = 0;
+ 	 uint8_t block[32];
 
-    designEnergy_mWh = 3.7 * designCapacity_mAh;
+    designEnergy_mWh = 3.7 * designCapacity_mAh;  //easy
     taperRate = designCapacity_mAh / ( 0.1 * taperCurrent_mA );
     HAL_Delay( 1000 );
     // Unseal gauge
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );
-    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );  //reg01-00 = 0x8000
+    bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );  //reg01-00 = 0x8000
     HAL_Delay( 50 );
     // Send CFG_UPDATE
-    bq27421_i2c_control_write( BQ27421_CONTROL_SET_CFGUPDATE );
+    bq27421_i2c_control_write( BQ27421_CONTROL_SET_CFGUPDATE );    //reg01-reg00 =0x0013  
 
     printf("%s:%d Checking  config flag\n", __func__, __LINE__);
     // Poll flags
     int counter = 0;
     do
     {	flags = 0;
-        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );
+        bq27421_i2c_command_read( BQ27421_FLAGS_LOW, &flags );    //flags= reg07-reg06
         if( !(flags & 0x0010) )
         {
             HAL_Delay( 50 );
@@ -192,18 +192,18 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     while( !(flags & 0x0010) );
     printf("%s:%d Flags: 0x%x \n", __func__, __LINE__, flags);
     // Enable Block Data Memory Control
-    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );
+    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );  //reg61-62=0000
 
     HAL_Delay( BQ27421_DELAY );
     printf("%s:%d \n", __func__, __LINE__);
     // Access State subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0052 );
+    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0052 );   //reg3f-3e =0052
     printf("%s:%d \n", __func__, __LINE__);
     // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
+    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );   //reg40-3f =0000  //or repeat to remove?
 
     // Read block checksum
-    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );
+    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );   //checksumOld = reg60-61
     printf("%s:%d CheckSumOld:0x%x\n", __func__, __LINE__, checksumOld);
     // Read 32-byte block of data
 
@@ -266,8 +266,6 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
 
     // Write the block offset
     bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-
-
 
 
     // Access State subclass
