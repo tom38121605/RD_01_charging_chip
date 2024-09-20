@@ -31,18 +31,18 @@
 #define BQ27421_FULL_CHARGE_CAP_HIGH        0x0F
 #define BQ27421_AVG_CURRENT_LOW             0x10
 #define BQ27421_AVG_CURRENT_HIGH            0x11
-#define BQ27421_STANDBY_CURRENT_LOW         0x12
-#define BQ27421_STANDBY_CURRENT_HIGH        0x13
-#define BQ27421_MAX_LOAD_CURRENT_LOW        0x14
-#define BQ27421_MAX_LOAD_CURRENT_HIGH       0x15
+#define BQ27421_STANDBY_CURRENT_LOW         0x12  //no
+#define BQ27421_STANDBY_CURRENT_HIGH        0x13  //no
+#define BQ27421_MAX_LOAD_CURRENT_LOW        0x14  //no
+#define BQ27421_MAX_LOAD_CURRENT_HIGH       0x15  //no
 #define BQ27421_AVG_POWER_LOW               0x18
 #define BQ27421_AVG_POWER_HIGH              0x19
 #define BQ27421_STATE_OF_CHARGE_LOW         0x1C
 #define BQ27421_STATE_OF_CHARGE_HIGH        0x1D
 #define BQ27421_INT_TEMP_LOW                0x1E
 #define BQ27421_INT_TEMP_HIGH               0x1F
-#define BQ27421_STATE_OF_HEALTH_LOW         0x20
-#define BQ27421_STATE_OF_HEALTH_HIGH        0x21
+#define BQ27421_STATE_OF_HEALTH_LOW         0x20  //no
+#define BQ27421_STATE_OF_HEALTH_HIGH        0x21  //no
 #define BQ27421_REMAINING_CAP_UNFILT_LOW    0x28
 #define BQ27421_REMAINING_CAP_UNFILT_HIGH   0x29
 #define BQ27421_REMAINING_CAP_FILT_LOW      0x2A
@@ -53,10 +53,12 @@
 #define BQ27421_FULL_CHARGE_FILT_CAP_HIGH   0x2F
 #define BQ27421_STATE_OF_CHARGE_UNFILT_LOW  0x30
 #define BQ27421_STATE_OF_CHARGE_UNFILT_HIGH 0x31
-#define BQ27421_OPCONFIG_LOW                0x3A
-#define BQ27421_OPCONFIG_HIGH               0x3B
-#define BQ27421_DESIGN_CAP_LOW              0x3C
-#define BQ27421_DESIGN_CAP_HIGH             0x3D
+
+#define BQ27421_OPCONFIG_LOW                0x3A  //no
+#define BQ27421_OPCONFIG_HIGH               0x3B  //no
+#define BQ27421_DESIGN_CAP_LOW              0x3C  //no
+#define BQ27421_DESIGN_CAP_HIGH             0x3D  //no
+
 #define BQ27421_DATA_CLASS                  0x3E
 #define BQ27421_DATA_BLOCK                  0x3F
 #define BQ27421_BLOCK_DATA_START            0x40
@@ -79,6 +81,9 @@
 #define BQ27421_CONTROL_SHUTDOWN            0x001C
 #define BQ27421_CONTROL_SEALED              0x0020
 #define BQ27421_CONTROL_TOGGLE_GPOUT        0x0023
+
+//¡£¡£¡£                                                /add
+
 #define BQ27421_CONTROL_RESET               0x0041
 #define BQ27421_CONTROL_SOFT_RESET          0x0042
 #define BQ27421_CONTROL_EXIT_CFGUPDATE      0x0043

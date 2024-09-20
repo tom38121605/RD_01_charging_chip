@@ -447,6 +447,7 @@ bool bq27421_readDeviceType( uint16_t *deviceType )
     return true;
 }
 
+
 bool bq27421_readDeviceFWver( uint16_t *deviceFWver )
 {
     if( !bq27421_i2c_control_write( BQ27421_CONTROL_FW_VERSION ) )
