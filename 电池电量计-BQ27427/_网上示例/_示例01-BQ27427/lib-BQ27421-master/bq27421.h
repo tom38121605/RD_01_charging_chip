@@ -82,7 +82,7 @@
 #define BQ27421_CONTROL_SEALED              0x0020
 #define BQ27421_CONTROL_TOGGLE_GPOUT        0x0023
 
-//。。。                                                /add
+//。。。                                                //add
 
 #define BQ27421_CONTROL_RESET               0x0041
 #define BQ27421_CONTROL_SOFT_RESET          0x0042

@@ -163,6 +163,8 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     uint8_t checksumNew;
 	 int ret = 0;
  	 uint8_t block[32];
+   
+   
 
     designEnergy_mWh = 3.7 * designCapacity_mAh;  //easy
     taperRate = designCapacity_mAh / ( 0.1 * taperCurrent_mA );
@@ -260,20 +262,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
 
 
 
-#if 0
-    // Access State subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0052 );
 
-    // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-
-
-    // Access State subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0052 );
-
-    // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-#endif
     // Read block checksum
     bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumRead );
 
@@ -283,81 +272,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     {
     	printf("%s:%d CheckSum not matched: checksumRead:0x%x,  wrote:0x%x \n", __func__, __LINE__, checksumRead, checksumNew);
     }
-#if 0
-    // Enable Block Data Memory Control
-    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );
 
-    HAL_Delay( BQ27421_DELAY );
-
-    // Access Registers subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0040 );
-
-    // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-
-    // Read block checksum
-    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );
-
-    // Read 32-byte block of data
-    for(uint8_t i = 0; i < 32; i++ )
-    {
-        block[i] = 0x00;
-    }
-
-    bq27421_i2c_read_data_block( 0x00, block, 32 );
-
-    // Calculate checksum
-    checksumCalc = 0x00;
-
-    for(uint8_t i = 0; i < 32; i++ )
-    {
-        checksumCalc += block[i];
-    }
-    checksumCalc = 0xFF - checksumCalc;
-    printf("%s:%d calculated CheckSum: 0x%x , checksumRead:0x%x \n", __func__, __LINE__, checksumCalc, checksumRead);
-    // Update OpConfig
-    block[0] = 0x05;
-
-    // Calculate new checksum
-    checksumNew = 0x00;
-    for(int i = 0; i < 32; i++ )
-    {
-        checksumNew += block[i];
-    }
-    checksumNew = 0xFF - checksumNew;
-
-    // Enable Block Data Memory Control
-    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );
-
-    HAL_Delay( BQ27421_DELAY );
-
-    // Access Registers subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0040 );
-
-    // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-
-    // Write 32-byte block of updated data
-    bq27421_i2c_write_data_block( 0x00, block, 32 );
-
-    // Write new checksum
-    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CHECKSUM, checksumNew );
-
-    // Access Registers subclass
-    bq27421_i2c_command_write( BQ27421_DATA_CLASS, 0x0040 );
-
-    // Write the block offset
-    bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );
-
-    // Read block checksum
-    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumRead );
-
-    // Verify
-    if( checksumRead != (uint8_t)checksumNew )
-    {
-        //return false;
-    }
-#endif
     // Configure BAT_DET
     bq27421_i2c_control_write( BQ27421_CONTROL_BAT_INSERT );
 
@@ -381,7 +296,8 @@ printf("FG Soft Reset \n");
     HAL_Delay( 1000 );
     bq27421_i2c_control_write( BQ27421_CONTROL_SOFT_RESET );
     HAL_Delay( 1000 );
-#if 1
+
+    
 	bq27421_readDeviceFWver(&ret);
 	printf("DEVICE FIRMWARE: %x \n", ret);
 	bq27421_readDeviceType(&ret);
@@ -401,9 +317,6 @@ printf("FG Soft Reset \n");
     }
     printf("\n");
    // printf("Design Capacity: %x , %d \n", ret, ret);
-
-#endif
-
 
     return true;
 }

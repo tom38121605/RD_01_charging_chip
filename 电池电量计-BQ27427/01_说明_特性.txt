@@ -139,7 +139,7 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
    Í¬Ñù£¬µ±StateOfCharge£¨£©ÉÏÉıµ½SOCFÇå³ıãĞÖµÒÔÉÏÊ±
    ²¢ÇÒÒÑ¾­ÉèÖÃÁË[SOCF]±êÖ¾£¬ÔòÇå³ıÁË[SOCF]±êÖ¾
 
-2.5.2 Battery Detection (BIN
+2.5.2 Battery Detection (BIN)
 
     ½âËµ£º BIE = 1, Ôò BIN½Å¼ì²âµç³Ø²åÈë.  Èç BIE = 0£¬Ôò ÓÃ BAT_INSERTsubcommand À´Ö¸Ê¾ÏµÍ³ÖĞÊÇ·ñ´æÔÚµç³Ø
 
@@ -248,7 +248,7 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
 
     wr 0x47-0x46 0xB004                     //Ğ´ÈëĞÂµÄDesCap£¬ 04b0 = 1200mA ´ıÑéÖ¤0x46ÊÇ¸ßÎ»
 
-    New_Csum = (OLD_Csum + OLD_DesCap -NEW_DesCap ) & 0xff
+    New_Csum =uint_8(   (OLD_Csum + OLD_DesCap -NEW_DesCap ) & 0xff  )
     wr 0x60 New_Csum 
 
     rd 0x60        OLD_Csum
@@ -265,14 +265,14 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
 
 
     
-¼Ä´æÆ÷Ê¾Àı3£º ĞŞ¸ÄÊı¾İÇøµÄdescap
+¼Ä´æÆ÷Ê¾Àı3£º ĞŞ¸Ächemid
 
     //unlock
     wr  control  0x8000
     wr  control  0x8000
 
     //¶ÁÈ¡Ô­ÓĞµÄ Chem ID
-    rd 0x00 0x08 0x00;
+    //rd 0x00 0x08 0x00;    //ÎŞ×÷ÓÃ  £¨¿ÉÔÚÆäËûµØ·½¶ÁÈ¡£©
 
     //go in update
     wr  control  0x0013
@@ -285,10 +285,10 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
     rd 0x06 Flags_register         //until reg06.4= 0
 
     //¶ÁÈ¡ĞÂµÄ Chem ID
-    rd 0x00 0x08 0x00;
+    //rd 0x00 0x08 0x00;    //ÎŞ×÷ÓÃ  £¨¿ÉÔÚÆäËûµØ·½¶ÁÈ¡£©
  
     //lock
-    wr 0x00 0x20 0x00
+    wr 0x00 0x20 0x00  //soft reset
 
 
 
