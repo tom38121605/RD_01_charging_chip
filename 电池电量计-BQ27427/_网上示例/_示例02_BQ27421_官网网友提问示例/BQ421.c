@@ -162,8 +162,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
     uint8_t checksumNew;
 	 int ret = 0;
- 	 uint8_t block[32];
-   
+ 	 uint8_t block[32];   
    
 
     designEnergy_mWh = 3.7 * designCapacity_mAh;  //easy
