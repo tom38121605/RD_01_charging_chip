@@ -165,7 +165,7 @@ bool bq27421_i2c_read_data_block( uint8_t offset, uint8_t *data, uint8_t bytes )
     return true;
 }
 
-//in£º designCapacity_mAh  £¬   terminateVoltage_mV  £¬  taperCurrent_mA  //200mAh, 3000mV, 80mA
+//in£º designCapacity_mAh£¬ terminateVoltage_mV£¬ taperCurrent_mA  //200mAh, 3000mV, 80mA
 bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, uint16_t taperCurrent_mA )
 {
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
