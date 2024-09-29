@@ -241,7 +241,7 @@ NominalAvailableCapacity£¨£©ºÍFullAvailableCapacity£¨£©·Ö±ğÊÇÊ£ÓàÈİÁ¿£¨£©ºÍÂú³äµ
     //change the data block
     wr 0x61 0x00                      //open data block
     wr 0x3E 0x52                      // ÉèÖÃsubclass Îª82
-    wr 0x3F 0x00                      //ÉèÖÃÊı¾İÇøµÄÊı¾İÆ«Àë·¶Î§£º  00 -  0 to 1f £¨Êµ¼ÊÊı¾İ·¶Î§ 40-5f£©£¬  01 -- 20 to 29
+    wr 0x3F 0x00                      //ÉèÖÃÊı¾İÇøµÄÊı¾İÆ«Àë·¶Î§£º  00 -  0 to 1f £¨Êµ¼ÊÊı¾İ·¶Î§ 40-5f£©£¬  01 -- 20 to 29 £¨Êı¾İ·¶Î§Ó³Éäµ½ 40-49£©
 
     rd 0x60        OLD_Csum
     rd 0x47-46   OLD_DesCap_MSB      //¶ÁÈ¡Ô­ÓĞµÄDesCap
