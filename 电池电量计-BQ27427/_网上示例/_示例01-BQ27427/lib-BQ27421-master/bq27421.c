@@ -444,25 +444,25 @@ bool bq27421_update( bq27421_info *battery )
 {
     uint16_t temp;
 
-    if( !bq27421_readVoltage_mV( &(battery->voltage_mV) ) )
+    if( !bq27421_readVoltage_mV( &(battery->voltage_mV) ) )       //voltage_mV = reg05 -reg04
     {
         return false;
     }
-    if( !bq27421_readAvgCurrent_mA( &(battery->current_mA) ) )
+    if( !bq27421_readAvgCurrent_mA( &(battery->current_mA) ) )    //current_mA = reg11 -reg10
     {
         return false;
     }
-    if( !bq27421_readTemp_degK( &temp ) )
+    if( !bq27421_readTemp_degK( &temp ) )                          //temp = reg03 -reg02
     {
         return false;
     }
     battery->temp_degC = ( (double)temp / 10 ) - 273.15;
 
-    if( !bq27421_readStateofCharge_percent( &(battery->soc_percent) ) )
+    if( !bq27421_readStateofCharge_percent( &(battery->soc_percent) ) )  //soc_percent= reg1d-reg1c
     {
         return false;
     }
-    if( !bq27421_readStateofHealth_percent( &(battery->soh_percent) ) )
+    if( !bq27421_readStateofHealth_percent( &(battery->soh_percent) ) )   //soh_percent =reg21-reg20
     {
         return false;
     }
@@ -470,11 +470,11 @@ bool bq27421_update( bq27421_info *battery )
     {
         return false;
     }
-    if( !bq27421_readRemainingCapacity_mAh( &(battery->remainingCapacity_mAh) ) )
+    if( !bq27421_readRemainingCapacity_mAh( &(battery->remainingCapacity_mAh) ) )  //remainingCapacity_mAh= reg0d-reg0c
     {
         return false;
     }
-    if( !bq27421_readFullChargeCapacity_mAh( &(battery->fullChargeCapacity_mAh) ) )
+    if( !bq27421_readFullChargeCapacity_mAh( &(battery->fullChargeCapacity_mAh) ) )  //fullChargeCapacity_mAh= reg0f-reg0e
     {
         return false;
     }

@@ -316,7 +316,7 @@ X:  1500                //延时 1500ms
 W: AA 3E 02 00     //reg3e=02, reg3f=00,   设置subclass为02， 设置offset为00
 W: AA 40 DD x 32  //reg40=reg5f，写入32个字节
 W: AA 60 A5         //reg60 = A5, 把checksum写入到reg60
-X; 200                  //有时200ms
+X; 200                  //延时200ms
 
 W: AA 3E 02 00     //reg3e=02, reg3f=00,   设置subclass为02， 设置offset为00    //--这句或是多余的 
 C:  AA 60 A5         //ival = reg60, 如果( reg60==A5)，则正确，继续向下运行
@@ -325,7 +325,7 @@ C:  AA 60 A5         //ival = reg60, 如果( reg60==A5)，则正确，继续向下运行
 W: AA 3E 24 00     //reg3e=24, reg3f=00,   设置subclass为24， 设置offset为00
 W: AA 40 DD x 32  //reg40=reg5f，写入32个字节
 W: AA 60 69         //reg60 = 69, 把checksum写入到reg60
-X; 200                  //有时200ms
+X; 200                  //延时200ms
 
 W: AA 3E 24 00     //reg3e=24, reg3f=00,   设置subclass为24， 设置offset为00    //--这句或是多余的 
 C:  AA 60 69         //ival = reg60, 如果( reg60==69)，则正确，继续向下运行
@@ -334,7 +334,7 @@ C:  AA 60 69         //ival = reg60, 如果( reg60==69)，则正确，继续向下运行
 W: AA 3E 30 00     //reg3e=30, reg3f=00,   设置subclass为30， 设置offset为00
 W: AA 40 DD x 32  //reg40=reg5f，写入32个字节
 W: AA 60 AD         //reg60 = AD, 把checksum写入到reg60
-X; 200                  //有时200ms
+X; 200                  //延时200ms
 
 W: AA 3E 30 00     //reg3e=30, reg3f=00,   设置subclass为30， 设置offset为00    //--这句或是多余的 
 C:  AA 60 AD         //ival = reg60, 如果( reg60==AD)，则正确，继续向下运行
