@@ -171,18 +171,16 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     uint16_t designEnergy_mWh, taperRate, flags, checksumOld, checksumRead;
     uint8_t checksumNew;
 
-//------------------Capacity init--------------------------------
-   
+    //calc   
     designEnergy_mWh = 3.7 * designCapacity_mAh;
     taperRate = designCapacity_mAh / ( 0.1 * taperCurrent_mA );
-
-//------------------Capacity init-----end---------------------------
+ 
    
    
 //========================set block Capacity============================================
    
    
-//------------------open block---set subclass and offset --read checksum---------------------------
+//------------------open block------------------------------
    
     // Unseal gauge
     bq27421_i2c_control_write( BQ27421_CONTROL_UNSEAL );   //reg01-reg00 = 8000   //reg00=00, reg01=80
@@ -202,9 +200,14 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     }
     while( !(flags & 0x0010) );  //wait, until reg06.4=1   CFGUPMODE  
     
+//------------------open block---end ---------------------------
 
+    
+//---------------------set subclass and offset -----------------------------
+    
     // Enable Block Data Memory Control
-    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );  //reg61-62=0000
+    bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );  //reg61-62=0000    
+    
 
     HAL_Delay( BQ27421_DELAY ); //1
     
@@ -213,15 +216,14 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
 
     // Write the block offset
     bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );    //reg40-3f =0000  //or repeat to remove?
+    
+//---------------------set subclass and offset ----end-------------------------
+    
 
+//----------------read checksum--read block---------------------------
+    
     // Read block checksum
-    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );   //checksumOld = reg60-61
-    
-    
-//------------------open block---set subclass and offset --read checksum--end-------------------------
-
-//------------------read block---------------------------
-    
+    bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );   //checksumOld = reg60-61    
 
     // Read 32-byte block of data
     uint8_t block[32];
@@ -239,12 +241,13 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     {
         checksumCalc += block[i];        
     }
-    checksumCalc = 0xFF - checksumCalc;     //get the block's checksum
-    
-//------------------read block--end-------------------------
+    checksumCalc = 0xFF - checksumCalc;     //get the block's checksum   //seems nouse
     
     
-//------------------put new Capacity to block---------------------------
+//---------------read checksum---read block--end-------------------------
+    
+    
+//------------------put new Capacity to block[]---------------------------
 
     // Update design capacity
     block[10] = (uint8_t)( designCapacity_mAh >> 8 );            //mAh
@@ -266,10 +269,8 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
         checksumNew += block[i];
     }
     checksumNew = 0xFF - checksumNew;    //get the new checksum
-
-
     
-//------------------put new Capacity to block--end-------------------------
+//------------------put new Capacity to block[]--end-------------------------
 
     
 //------------------write new block and new checksum--------------------------
@@ -316,7 +317,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     
 //========================set block opconfig============================================
     
-//------------------open block---set subclass and offset --read checksum---------------------------
+//------------------set subclass and offset -----------------------------
     
     // Enable Block Data Memory Control
     bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );  //reg62-61 =0000
@@ -328,13 +329,13 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
 
     // Write the block offset
     bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );  //reg40-3f =0000
+    
+//------------------set subclass and offset ----end-------------------------
+
+//------------------read checksum and block---------------------------
 
     // Read block checksum
     bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );    //checksumOld = reg60
-    
-//------------------open block---set subclass and offset --read checksum--end-------------------------
-
-//------------------read block---------------------------
     
     // Read 32-byte block of data
     for(uint8_t i = 0; i < 32; i++ )
@@ -351,11 +352,7 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     {
         checksumCalc += block[i];
     }
-    checksumCalc = 0xFF - checksumCalc;  //get the checksum
-    
-//------------------read block--end-------------------------
-    
-//------------------write new opconfig to block---------------------------
+    checksumCalc = 0xFF - checksumCalc;  //get the checksum     //seems no use   
 
     // Update OpConfig
     block[0] = 0x05;             //set new OpConfig
@@ -367,6 +364,11 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
         checksumNew += block[i];
     }
     checksumNew = 0xFF - checksumNew;   //get the new checksum
+
+//------------------read checksum and block--end-------------------------
+
+
+//------------------write new opconfig and new checksum ---------------------------
 
     // Enable Block Data Memory Control
     bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CONTROL, 0x0000 );   //reg62-61 =0000   
@@ -380,16 +382,13 @@ bool bq27421_init( uint16_t designCapacity_mAh, uint16_t terminateVoltage_mV, ui
     bq27421_i2c_command_write( BQ27421_DATA_BLOCK, 0x0000 );   //reg40-3f =0000
 
     // Write 32-byte block of updated data
-    bq27421_i2c_write_data_block( 0x00, block, 32 );   //reg5f-40 = block 
-    
-//------------------write new opconfig to block---end------------------------
-    
-//------------------write new checksum--------------------------
+    bq27421_i2c_write_data_block( 0x00, block, 32 );   //reg5f-40 = block     
 
     // Write new checksum
     bq27421_i2c_command_write( BQ27421_BLOCK_DATA_CHECKSUM, checksumNew );    //reg61-60 =checksumNew
-    
-//------------------write new checksum--end------------------------
+
+    //------------------write new opconfig and new checksum---end------------------------
+
     
 //------------------read new checksum--------------------------
 
