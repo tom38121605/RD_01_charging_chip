@@ -297,11 +297,11 @@ printf("FG Soft Reset \n");
     HAL_Delay( 1000 );
 
     
-	bq27421_readDeviceFWver(&ret);
-	printf("DEVICE FIRMWARE: %x \n", ret);
-	bq27421_readDeviceType(&ret);
-	printf("DEVICE TYPE: %x \n", ret);
-	checksumOld = 0;
+	 bq27421_readDeviceFWver(&ret);
+  	 printf("DEVICE FIRMWARE: %x \n", ret);
+	 bq27421_readDeviceType(&ret);
+	 printf("DEVICE TYPE: %x \n", ret);
+	 checksumOld = 0;
     bq27421_i2c_command_read( BQ27421_BLOCK_DATA_CHECKSUM, &checksumOld );
     printf("%s:%d CheckSumOld:0x%x\n", __func__, __LINE__, checksumOld);
 

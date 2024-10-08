@@ -1,5 +1,7 @@
- 
 https://e2e.ti.com/search?q=BQ27427&category=forum    //πŸÕ¯Ã·Œ 
+
+https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/1381788/bq27427-when-initializing-the-bq27427-where-are-delays-required?tisearch=e2e-sitesearch&keymatch=BQ27427#       //bq27427—” ±
+
 
 https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/496758/bq27421-g1-remaining-capacity-and-full-charge-capacity-errors
 
